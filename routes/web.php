@@ -16,3 +16,18 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// HOME
+Route::get('/home', 'HomeController@index');
+Route::post('/home', 'HomeController@input');
+
+// YEAR
+Route::get('/year', 'YearController@index');
+
+// MONTH
+Route::get('/month', 'MonthController@index');
+// /month/{year}/{month}
+
+// SETTING
+Route::get('/setting', 'SettingController@setting');
+Route::post('/setting', 'SettingController@save');
