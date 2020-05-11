@@ -1,20 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-  <h1 class="bg-secondary mb-1">> HOME</h1>
+  <h1 class="bg-secondary mb-4">> HOME</h1>
 
-  <input type="date" value="{{$date}}">
   <div class="container">
-    
+    <input type="date" value="{{$date}}">
     <form action="/home" method="post">
       @csrf
-
       {{-- start --}}
       <div class="row mt-3 mb-2">
         <label class="col-3 bg-danger rounded text-white">IN</label>
         <input type="time" id="start" name="start" class="col-8 offset-1" value="{{$setting->start}}">
       </div>
-      <button type="submit" class="btn btn-danger btn-lg mb-5 disabled">OK</button>
     
       {{-- end --}}
       <div class="row">
@@ -25,8 +22,9 @@
       {{-- break --}}
       <div class="row mt-3">
         <label class="col-3 rounded bg-success text-white">BREAK</label>
-        <input type="time" id="break" name="break" class="col-8 offset-1" value="{{}}">
+        <input type="time" id="break" name="break" class="col-8 offset-1" value="{{$setting->break}}">
       </div>
+      
       <button type="submit" class="btn btn-primary btn-lg">OK</button>
     </form>
     {{-- startとendは別のフォームにしたい --}}

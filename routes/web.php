@@ -26,8 +26,13 @@ Route::get('/year', 'YearController@index');
 
 // MONTH
 Route::get('/month', 'MonthController@index');
-// /month/{year}/{month}
+// /month/{year}/{month}のようなurlにしたい
 
 // SETTING
-Route::get('/setting', 'SettingController@setting');
+// Route::get('/setting', 'SettingController@setting');
 Route::post('/setting', 'SettingController@save');
+Route::get('/setting', 'SettingController@showCalendar');
+
+// LogIn
+Auth::routes();
+Route::get('/home', 'HomeController@index')->name('home');
