@@ -3,9 +3,31 @@
 @section('content')
   <h1 class="bg-secondary mb-1">> HOME</h1>
 
-  @foreach($works as $work)
-    <a href="/month/{{$work->date}}">{{$work->date}}</a>
-  @endforeach
+  <table class="table table-bordered">
+    {{-- 曜日 --}}
+    <thead>
+      <tr class="text-center">
+        @foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $dayOfWeek)
+        <th>{{$dayOfWeek}}</th>
+        @endforeach
+      </tr>
+    </thead>
+
+    {{-- 日付 --}}
+    <tbody>
+      <tr>
+          {{-- 先月の空セル --}}
+          @if($firstDay->dayOfWeek != 0)
+          <td class="bg-secondary"></td>*{{$firstDay->dayOfWeek}}
+          @endif
+          {{-- 先月の空セル --}}
+          
+          {{-- 来月の空セル --}}
+          {{-- 来月の空セル --}}
+    </tbody>
+  </table>
+</div>
+
   {{-- Nab Bar --}}
   <ul class="nav nav-fill bg-secondary text-light justify-content-center fixed-bottom">
     <li class="nav-item border-right">

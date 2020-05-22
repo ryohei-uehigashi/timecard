@@ -22,10 +22,10 @@ Route::get('/home', 'HomeController@index');
 Route::post('/home', 'HomeController@input');
 
 // YEAR
-Route::get('/year', 'YearController@index');
+Route::get('/year', 'YearController@getCalendarDates');
 
 // MONTH
-Route::get('/month', 'MonthController@index');
+Route::get('/month', 'MonthController@getCalendarDates');
 // /month/{year}/{month}のようなurlにしたい
 
 // SETTING

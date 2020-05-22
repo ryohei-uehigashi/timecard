@@ -8,14 +8,35 @@ use Carbon\Carbon;
 
 class MonthController extends Controller
 {
-    public function index() {
-    // whereで月ごとに絞り込み
-    $works = Work::get();
-    foreach ($works as $work) {
-        $work->date = Carbon::parse($work->date)->format('n/j(D)');
-        $work->start = Carbon::parse($work->start)->format('H:i');
-        $work->end = Carbon::parse($work->end)->format('H:i');
-    }
-    return view('month', ['works'=>$works]);
+    public function getCalendarDates(Request $request)
+    {
+        // whereで月ごとに絞り込
+        // ymをyear,month
+        $currentDate = new Carbon();
+        $firstDay = Carbon::now()->firstOfMonth();
+        // カレンダーを四角形にするため、前月となる左上の隙間用のデータを入れるためずらす
+        // $addDay = 0 or 7
+        $addDay = ($firstDay->copy()->endOfMonth()->isSunday()) ? 7 : 0;
+        $firstDay->subDay($firstDay->dayOfWeek);
+        // 同上。右下の隙間のための計算。
+        $count = 31 + $addDay + $firstDay->dayOfWeek;
+        $count = ceil($count / 7) * 7;
+        $dates = [];
+
+        $works = Work::where('date','>=',$firstDay->format('Y-m-d'))
+            ->where('date','<',$firstDay->copy()->addDay($count))->get();
+        for ($i = 0; $i < $count; $i++, $firstDay->addDay()) {
+            // copyしないと全部同じオブジェクトを入れてしまうことになる
+            $dates[] = $firstDay->copy(); //参照渡し、物の場所が渡される
+        }
+
+        return view('month', [
+            'firstDay'=>$firstDay,
+            'dates'=>$dates,
+            'works'=>$works,
+            'currentDate'=>$currentDate,
+            'firstDay'=>$firstDay
+        ]);
+
     }
 }

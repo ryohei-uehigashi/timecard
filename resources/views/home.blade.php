@@ -4,15 +4,15 @@
   <h1 class="bg-secondary mb-4">> HOME</h1>
 
   <div class="container">
-    <input type="date" value="{{$date}}">
     <form action="/home" method="post">
       @csrf
+      <input type="date" id="date" name="date" value="{{$date}}">
       {{-- start --}}
       <div class="row mt-3 mb-2">
         <label class="col-3 bg-danger rounded text-white">IN</label>
         <input type="time" id="start" name="start" class="col-8 offset-1" value="{{$setting->start}}">
       </div>
-    
+
       {{-- end --}}
       <div class="row">
         <label class="col-3 rounded bg-primary text-white mb-2">OUT</label>
@@ -24,7 +24,7 @@
         <label class="col-3 rounded bg-success text-white">BREAK</label>
         <input type="time" id="break" name="break" class="col-8 offset-1" value="{{$setting->break}}">
       </div>
-      
+
       <button type="submit" class="btn btn-primary btn-lg">OK</button>
     </form>
     {{-- startとendは別のフォームにしたい --}}
