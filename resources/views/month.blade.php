@@ -11,11 +11,47 @@
 
   <div class="container">
 
-    <h3 class="my-3"> {{-- select box--}}
-      {{$currentDate->year}}年{{$currentDate->month}}月
+    <h3 class="my-3">
+      {{$currentDate->year}}年
+      {{$currentDate->month}}月
     </h3>
 
-    <table class="table table-bordered">
+    {{-- 残業時間 --}}
+      <div>
+        {{$totalOverTime}}
+      </div>
+
+    {{-- 年月選択 --}}
+    <select name="selectYm" onChange="location.href=value;">
+      @foreach ($selectYm as $select)
+      @if($select == $currentDate->format('Y-m'))
+        <option selected value="/month?target={{$select}}">{{$select}}</option>
+      @else
+        <option value="/month?target={{$select}}">{{$select}}</option>
+      @endif
+      @endforeach
+    </select>
+
+    {{-- スマホの場合 --}}
+    @foreach($dates as $date)
+      <div class="row d-sm-none">
+        @foreach($works as $work)
+            @if ($date->month == \Carbon\Carbon::parse($work->date)->format('m') &&
+                  $date->day == \Carbon\Carbon::parse($work->date)->format('d'))
+
+            <div class="col">
+              {{\Carbon\Carbon::parse($work->date)->format('j')}}
+              {{$work->start}}~{{$work->end}}
+              <button type="button" class="btn btn-primary btn-sm ml-1 " onclick="location.href='./edit/{{$work->id}}'">
+                Edit
+              </button>
+            </div>
+            @endif
+            @endforeach
+      </div>
+    @endforeach
+
+    <table class="table table-bordered d-none d-sm-table">
       {{-- 曜日 --}}
       <thead>
         <tr class="text-center">
@@ -35,61 +71,32 @@
             class="bg-secondary"
             @endif
           >
-            {{ $date->day }}
+            {{ $date->day }} {{-- セル内の日付--}}
             <br>
             {{-- 勤務時間 --}}
             @foreach($works as $work)
-            @if ($date->day == \Carbon\Carbon::parse($work->date)->format('d'))
-            <div class="text-center">
-              {{$work->start}}
-            </div>
+            @if ($date->month == \Carbon\Carbon::parse($work->date)->format('m') &&
+                  $date->day == \Carbon\Carbon::parse($work->date)->format('d'))
+
+            <div class="text-center text-dark"> {{$work->start}} </div>
             <br>
-            <div class="text-center">~</div>
+            <div class="text-center text-dark"> ~ </div>
             <br>
-            <div class="text-center">
+            <div class="text-center text-dark">
               {{$work->end}}
             </div>
             <br>
 
-            {{-- 編集ボタン --}}
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal">
+            <button type="button" class="btn btn-primary col mr-1" onclick="location.href='./edit/{{$work->id}}'">
               Edit
             </button>
 
-            {{-- 編集Modal --}}
-            <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby ="editModal" aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-
-                  <div class="modal-header">
-                    {{$date}}
-                  </div>
-
-                  <form action="/month">
-                    <div class="modal-body">
-                      <div class="row">
-                        <label for="in" class="text-light bg-danger col">IN</label>
-                        <input type="time" id="in" class="col" value="{{$work->start}}">
-                      </div>
-                      <div class="row">
-                        <label for="out" class="text-light bg-primary col">OUT</label>
-                        <input type="time" id="out" class="col" value="{{$work->end}}">
-                      </div>
-                    </div>
-
-                    <div class="modal-footer">
-                      <button class="btn btn-secondary" data-dismiss="modal">Cannsel</button>
-                      <button type="submit" class="btn btn-primary">Save</button>
-                    </div>
-                  </form>
-
-                </div>
-              </div>
-            </div>
-
             @endif
             @endforeach
+
           </td>
+
+        {{-- 土曜日なら改行 --}}
         @if ($date->dayOfWeek == 6)
         </tr>
         @endif
@@ -99,21 +106,17 @@
   </div>
 
   {{-- Nab Bar --}}
-  <ul class="nav nav-fill bg-secondary text-light justify-content-center fixed-bottom">
-    <li class="nav-item border-right active">
-      <a href="/home" class="nav-link">HOME</a>
+  <ul class="nav nav-fill bg-secondary justify-content-center fixed-bottom">
+    <li class="nav-item border-right">
+      <a href="/home" class="nav-link text-light">HOME</a>
       <i class="fas fa-home"></i>
     </li>
     <li class="nav-item border-right">
-      <a href="year" class="nav-link">YEAR</a>
-      <i class="fas fa-calendar-alt"></i>
-    </li>
-    <li class="nav-item border-right">
-      <a href="/month" class="nav-link active">MONTH</a>
+      <a href="/month" class="nav-link active text-light">MONTH</a>
       <i class="fas fa-calendar-minus"></i>
     </li>
     <li class="nav-item">
-      <a href="/setting" class="nav-link">SETTING</a>
+      <a href="/setting" class="nav-link text-light">SETTING</a>
       <i class="fas fa-cog"></i>
     </li>
   </ul>

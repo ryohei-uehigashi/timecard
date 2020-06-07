@@ -4,11 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Setting;
+use stdClass;
 
 class SettingController extends Controller
 {
     public function setting() {
         $setting = Setting::first();
+        if ($setting == null) {
+            $setting = new stdClass();
+            $setting->start = "08:00";
+            $setting->end = "17:00";
+            $setting->break = "01:00";
+        }
         return view('setting', ['setting'=>$setting]);
     }
     

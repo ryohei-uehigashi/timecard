@@ -26,12 +26,12 @@ Route::get('/year', 'YearController@getCalendarDates');
 
 // MONTH
 Route::get('/month', 'MonthController@getCalendarDates');
-// /month/{year}/{month}のようなurlにしたい
+Route::get('/edit/{id}', 'MonthController@edit'); //編集ページに飛ぶ
+Route::post('/edit/{id}', 'MonthController@update'); //編集後、更新
 
 // SETTING
-// Route::get('/setting', 'SettingController@setting');
 Route::post('/setting', 'SettingController@save');
-Route::get('/setting', 'SettingController@showCalendar');
+Route::get('/setting', 'SettingController@setting');
 
 // LogIn
 Auth::routes();

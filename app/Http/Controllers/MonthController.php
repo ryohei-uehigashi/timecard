@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Work;
+use App\Setting;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -10,10 +11,45 @@ class MonthController extends Controller
 {
     public function getCalendarDates(Request $request)
     {
-        // whereで月ごとに絞り込
-        // ymをyear,month
-        $currentDate = new Carbon();
-        $firstDay = Carbon::now()->firstOfMonth();
+        // $selectYm : 年月の選択肢
+        $selectYm =[];
+        $allWorks = Work::get();
+        foreach ($allWorks as $work) {
+            $workYm = Carbon::parse($work->date)->format('Y-m');
+            if (array_search($workYm,$selectYm) === false) {
+                $selectYm[] = $workYm;
+            }
+        }
+
+            // targetがあれば、$request->target なければ今の日付
+        $selectMonth = $request->target ? Carbon::parse($request->target) : Carbon::now(); //選択した年月
+        $currentDate = $selectMonth->copy();
+        $firstDay = $selectMonth->copy()->firstOfMonth();
+
+        // 設定から定時を設定
+        $setting = Setting::first();
+        $settingBreak = Carbon::parse('00:00:00')->diffInMinutes(Carbon::parse($setting->break));
+        $settingWork = Carbon::parse($setting->start)->diffInMinutes($setting->end);
+        $teiji = $settingWork - $settingBreak;
+
+        // 残業時間
+        // 今月の出勤、退勤、休憩を取得
+        $works = Work::where('date','>=',$currentDate->firstOfMonth()->toDateString())
+            ->where('date', '<=', $currentDate->lastOfMonth()->toDateString())->get();
+
+        $totalOverTime = 0;
+        $totalWorkTime = 0;
+        foreach($works as $month) {
+            $workStart = Carbon::parse($month->start);
+            $workEnd = Carbon::parse($month->end);
+            $break = Carbon::parse('00:00:00')->diffInMinutes(Carbon::parse($month->break));
+            $workTime = $workStart->diffInMinutes($workEnd) - $break;
+            $totalWorkTime += $workTime;
+            if ($workTime > $teiji) {
+                $totalOverTime += $workTime-$teiji;
+            }
+        }
+
         // カレンダーを四角形にするため、前月となる左上の隙間用のデータを入れるためずらす
         // $addDay = 0 or 7
         $addDay = ($firstDay->copy()->endOfMonth()->isSunday()) ? 7 : 0;
@@ -23,8 +59,6 @@ class MonthController extends Controller
         $count = ceil($count / 7) * 7;
         $dates = [];
 
-        $works = Work::where('date','>=',$firstDay->format('Y-m-d'))
-            ->where('date','<',$firstDay->copy()->addDay($count))->get();
         for ($i = 0; $i < $count; $i++, $firstDay->addDay()) {
             // copyしないと全部同じオブジェクトを入れてしまうことになる
             $dates[] = $firstDay->copy(); //参照渡し、物の場所が渡される
@@ -35,8 +69,27 @@ class MonthController extends Controller
             'dates'=>$dates,
             'works'=>$works,
             'currentDate'=>$currentDate,
-            'firstDay'=>$firstDay
+            'firstDay'=>$firstDay,
+            'selectYm'=>$selectYm,
+            'totalOverTime'=>$totalOverTime
         ]);
-
     }
+
+    // 編集ページ
+    public function edit(Request $request, $id){
+        $work = Work::find($id);
+        return view('edit', ['work' => $work]);
+    }
+
+    // 更新
+    public function update(Request $request, $id) {
+        $work = Work::find($id);
+        $work->update([
+            'start' => $request->start,
+            'end' => $request->end,
+            'break' => $request->break,
+        ]);
+        return redirect('/month');
+        }
+
 }
