@@ -33,6 +33,3 @@ Route::post('/edit/{id}', 'MonthController@update'); //編集後、更新
 Route::post('/setting', 'SettingController@save');
 Route::get('/setting', 'SettingController@setting');
 
-// LogIn
-Auth::routes();
-Route::get('/home', 'HomeController@index')->name('home');

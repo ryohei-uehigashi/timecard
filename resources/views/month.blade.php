@@ -11,15 +11,14 @@
 
   <div class="container">
 
-    <h3 class="my-3">
-      {{$currentDate->year}}年
-      {{$currentDate->month}}月
-    </h3>
+    <h2 class="my-3">
+      {{$currentDate->year}}年{{$currentDate->month}}月
+    </h2>
 
     {{-- 残業時間 --}}
-      <div>
-        {{$totalOverTime}}
-      </div>
+      <h4>
+        今月の残業時間：{{$overHour}}時間{{$overMinute}}分
+      </h4>
 
     {{-- 年月選択 --}}
     <select name="selectYm" onChange="location.href=value;">

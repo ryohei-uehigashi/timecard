@@ -29,14 +29,14 @@ class MonthController extends Controller
         // 設定から定時を設定
         $setting = Setting::first();
         $settingBreak = Carbon::parse('00:00:00')->diffInMinutes(Carbon::parse($setting->break));
-        $settingWork = Carbon::parse($setting->start)->diffInMinutes($setting->end);
-        $teiji = $settingWork - $settingBreak;
+        $settingWork = Carbon::parse($setting->start)->diffInMinutes($setting->end); //勤務開始から退勤まで何時間何分か
+        $teiji = $settingWork - $settingBreak; //そこから休憩時間を引く
 
-        // 残業時間
         // 今月の出勤、退勤、休憩を取得
         $works = Work::where('date','>=',$currentDate->firstOfMonth()->toDateString())
-            ->where('date', '<=', $currentDate->lastOfMonth()->toDateString())->get();
+        ->where('date', '<=', $currentDate->lastOfMonth()->toDateString())->get();
 
+        // 残業時間
         $totalOverTime = 0;
         $totalWorkTime = 0;
         foreach($works as $month) {
@@ -49,6 +49,8 @@ class MonthController extends Controller
                 $totalOverTime += $workTime-$teiji;
             }
         }
+        $overHour = floor($totalOverTime/60);
+        $overMinute = $totalOverTime%60;
 
         // カレンダーを四角形にするため、前月となる左上の隙間用のデータを入れるためずらす
         // $addDay = 0 or 7
@@ -71,7 +73,9 @@ class MonthController extends Controller
             'currentDate'=>$currentDate,
             'firstDay'=>$firstDay,
             'selectYm'=>$selectYm,
-            'totalOverTime'=>$totalOverTime
+            'totalOverTime'=>$totalOverTime,
+            'overHour'=>$overHour,
+            'overMinute'=>$overMinute
         ]);
     }
 

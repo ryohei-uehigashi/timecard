@@ -33,10 +33,6 @@
       <i class="fas fa-home"></i>
     </li>
     <li class="nav-item border-right">
-      <a href="year" class="nav-link">YEAR</a>
-      <i class="fas fa-calendar-alt"></i>
-    </li>
-    <li class="nav-item border-right">
       <a href="/month" class="nav-link">MONTH</a>
       <i class="fas fa-calendar-minus"></i>
     </li>
