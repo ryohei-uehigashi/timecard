@@ -17,7 +17,7 @@
         <p>~</p>
         <input type="time" id="end" name="end" class="bg-primary" value="{{$setting->end}}">
       </div>
-      
+
       {{-- 休憩時間設定 --}}
       <h3>◆休憩</h3>
       <input type="time" id="break" name="break" value="{{$setting->break}}" class="border-bottom mb-4">

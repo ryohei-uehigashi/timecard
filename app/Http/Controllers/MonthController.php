@@ -6,6 +6,7 @@ use App\Work;
 use App\Setting;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use stdClass;
 
 class MonthController extends Controller
 {
@@ -14,6 +15,7 @@ class MonthController extends Controller
         // $selectYm : 年月の選択肢
         $selectYm =[];
         $allWorks = Work::get();
+
         foreach ($allWorks as $work) {
             $workYm = Carbon::parse($work->date)->format('Y-m');
             if (array_search($workYm,$selectYm) === false) {
@@ -21,16 +23,24 @@ class MonthController extends Controller
             }
         }
 
-            // targetがあれば、$request->target なければ今の日付
+        // targetがあれば、$request->target なければ今の日付
         $selectMonth = $request->target ? Carbon::parse($request->target) : Carbon::now(); //選択した年月
         $currentDate = $selectMonth->copy();
         $firstDay = $selectMonth->copy()->firstOfMonth();
 
         // 設定から定時を設定
         $setting = Setting::first();
-        $settingBreak = Carbon::parse('00:00:00')->diffInMinutes(Carbon::parse($setting->break));
+        $settingBreak = Carbon::parse('00:00:00')->diffInMinutes(Carbon::parse($setting->break)); //$settingないときエラー
         $settingWork = Carbon::parse($setting->start)->diffInMinutes($setting->end); //勤務開始から退勤まで何時間何分か
         $teiji = $settingWork - $settingBreak; //そこから休憩時間を引く
+
+        // DBの中身がないとき
+        if ($setting == null) {
+            $setting = new stdClass();
+            $setting->start = "08:00";
+            $setting->end = "17:00";
+            $setting->break = "01:00";
+        }
 
         // 今月の出勤、退勤、休憩を取得
         $works = Work::where('date','>=',$currentDate->firstOfMonth()->toDateString())
