@@ -28,12 +28,6 @@ class MonthController extends Controller
         $currentDate = $selectMonth->copy();
         $firstDay = $selectMonth->copy()->firstOfMonth();
 
-        // 設定から定時を設定
-        $setting = Setting::first();
-        $settingBreak = Carbon::parse('00:00:00')->diffInMinutes(Carbon::parse($setting->break)); //$settingないときエラー
-        $settingWork = Carbon::parse($setting->start)->diffInMinutes($setting->end); //勤務開始から退勤まで何時間何分か
-        $teiji = $settingWork - $settingBreak; //そこから休憩時間を引く
-
         // DBの中身がないとき
         if ($setting == null) {
             $setting = new stdClass();
@@ -41,6 +35,13 @@ class MonthController extends Controller
             $setting->end = "17:00";
             $setting->break = "01:00";
         }
+
+        // 設定から定時を設定
+        $setting = Setting::first();
+        $settingBreak = Carbon::parse('00:00:00')->diffInMinutes(Carbon::parse($setting->break)); //$settingないときエラー
+        $settingWork = Carbon::parse($setting->start)->diffInMinutes($setting->end); //勤務開始から退勤まで何時間何分か
+        $teiji = $settingWork - $settingBreak; //そこから休憩時間を引く
+
 
         // 今月の出勤、退勤、休憩を取得
         $works = Work::where('date','>=',$currentDate->firstOfMonth()->toDateString())
